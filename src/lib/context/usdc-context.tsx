@@ -62,9 +62,9 @@ export function USDCProvider({ children }: { children: ReactNode }) {
         fetchAllNetworksUSDCMetrics(),
         fetchHistoricalSupply('mainnet', 30),
         fetchHistoricalWalletCount('mainnet', 30),
-        fetchMintBurnData('mainnet', 7),
+        fetchMintBurnData(7),
         fetchLargeTransfers('mainnet', 10),
-        getCurrentUSDCPrice('mainnet')
+        getCurrentUSDCPrice()
       ]);
 
       setNetworkMetrics(metricsData);
