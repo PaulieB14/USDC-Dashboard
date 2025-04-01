@@ -53,19 +53,36 @@ export function USDCProvider({ children }: { children: ReactNode }) {
       // Fetch all data in parallel
       const [
         metricsData,
-        supplyData,
-        walletCountData,
-        mintBurnDataResult,
         transfersData,
         priceData
       ] = await Promise.all([
         fetchAllNetworksUSDCMetrics(),
-        fetchHistoricalSupply('mainnet', 30),
-        fetchHistoricalWalletCount('mainnet', 30),
-        fetchMintBurnData(7),
         fetchLargeTransfers('mainnet', 10),
         getCurrentUSDCPrice('mainnet')
       ]);
+
+      // Try to fetch historical data, but handle errors gracefully
+      let supplyData: { date: string; supply: number }[] = [];
+      let walletCountData: { date: string; count: number }[] = [];
+      let mintBurnDataResult: MintBurnData[] = [];
+      
+      try {
+        supplyData = await fetchHistoricalSupply();
+      } catch (error) {
+        console.error("Error fetching historical supply data:", error);
+      }
+      
+      try {
+        walletCountData = await fetchHistoricalWalletCount();
+      } catch (error) {
+        console.error("Error fetching historical wallet count data:", error);
+      }
+      
+      try {
+        mintBurnDataResult = await fetchMintBurnData();
+      } catch (error) {
+        console.error("Error fetching mint/burn data:", error);
+      }
 
       setNetworkMetrics(metricsData);
       setHistoricalSupply(supplyData);
