@@ -110,6 +110,27 @@ export async function fetchTokenTransfers(address: string, network: string, limi
 
 // We don't have real holder counts from the API
 
+// Function to fetch token information directly by contract address
+async function fetchTokenInfo(contract: string, networkId: string): Promise<any> {
+  const apiUrl = `https://token-api.thegraph.com/token/${networkId}/${contract}`;
+  
+  console.log(`Fetching token info for contract ${contract} on network ${networkId} from ${apiUrl}`);
+  
+  const response = await fetch(apiUrl, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${process.env.NEXT_PUBLIC_GRAPH_API_TOKEN}`,
+    },
+  });
+  
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status} - ${await response.text()}`);
+  }
+  
+  return await response.json();
+}
+
 // Function to fetch USDC metrics for a specific network
 export async function fetchNetworkUSDCMetrics(network: string): Promise<TokenMetrics> {
   // Normalize network name to handle different formats
@@ -128,33 +149,14 @@ export async function fetchNetworkUSDCMetrics(network: string): Promise<TokenMet
   // Get the correct network ID for the API
   const networkId = NETWORK_IDS[normalizedNetwork] || normalizedNetwork;
   
-  // Use a known address with USDC for each network
-  // These are major holders or protocol addresses that should have USDC
-  const addresses: { [key: string]: string } = {
-    ethereum: '0x47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503', // Binance
-    polygon: '0x1a13f4ca1d028320a707d99520abfefca3998b7f', // Aave
-    arbitrum: '0x489ee077994b6658eafa855c308275ead8097c4a', // Arbitrum Bridge
-    optimism: '0x9560e827af36c94d2ac33a39bce1fe78631088db', // Optimism: Velodrome
-    base: '0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA', // Base: Circle
-  };
-  
-  const address = addresses[normalizedNetwork as keyof typeof addresses];
-  if (!address) {
-    throw new Error(`No known USDC holder address for network: ${network}`);
-  }
-  
-  console.log(`Using address ${address} for network ${normalizedNetwork} with network ID ${networkId}`);
+  console.log(`Fetching USDC metrics for network ${normalizedNetwork} with contract ${contract}`);
   
   try {
-    const response = await fetchTokenBalances(address, networkId);
+    // Try to fetch token info directly by contract
+    const tokenInfo = await fetchTokenInfo(contract, networkId);
     
-    // Find USDC in the response
-    const usdc = response.data.find(
-      (token) => token.contract.toLowerCase() === contract.toLowerCase()
-    );
-    
-    if (!usdc) {
-      throw new Error(`No USDC found for address ${address} on network ${networkId}`);
+    if (!tokenInfo || tokenInfo.symbol !== 'USDC') {
+      throw new Error(`Invalid token info returned for USDC contract ${contract} on network ${networkId}`);
     }
     
     // We don't have real holder count data from the API
@@ -164,8 +166,8 @@ export async function fetchNetworkUSDCMetrics(network: string): Promise<TokenMet
     // Calculate the total supply in dollars (normalized value)
     // The amount from the API is already in the token's smallest unit
     // We need to convert it to the token's standard unit (1 USDC)
-    const rawAmount = parseFloat(usdc.amount);
-    const decimals = usdc.decimals || 6; // Default to 6 if not provided
+    const rawAmount = parseFloat(tokenInfo.total_supply || '0');
+    const decimals = tokenInfo.decimals || 6; // Default to 6 if not provided
     const normalizedAmount = rawAmount / Math.pow(10, decimals);
     
     console.log(`${normalizedNetwork} raw amount: ${rawAmount}, decimals: ${decimals}, normalized: ${normalizedAmount}`);
@@ -174,9 +176,9 @@ export async function fetchNetworkUSDCMetrics(network: string): Promise<TokenMet
       network: normalizedNetwork,
       totalSupply: normalizedAmount, // Return the normalized amount in dollars
       holderCount: holderCount,
-      price: usdc.price_usd || 1.0,
-      marketCap: usdc.value_usd || 0,
-      dailyVolume: 0, // Not available in this API
+      price: tokenInfo.price_usd || 1.0,
+      marketCap: tokenInfo.market_cap || 0,
+      dailyVolume: tokenInfo.volume_24h || 0, // May be available in token info
     };
   } catch (error) {
     console.error(`Error fetching metrics for ${normalizedNetwork}:`, error);
@@ -208,6 +210,27 @@ export async function fetchAllNetworksUSDCMetrics(): Promise<TokenMetrics[]> {
   return results;
 }
 
+// Function to fetch token transfers directly by contract
+async function fetchTokenTransfersByContract(contract: string, networkId: string, limit: number = 10): Promise<any> {
+  const apiUrl = `https://token-api.thegraph.com/transfers/token/${networkId}/${contract}?limit=${limit}`;
+  
+  console.log(`Fetching token transfers for contract ${contract} on network ${networkId} from ${apiUrl}`);
+  
+  const response = await fetch(apiUrl, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${process.env.NEXT_PUBLIC_GRAPH_API_TOKEN}`,
+    },
+  });
+  
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status} - ${await response.text()}`);
+  }
+  
+  return await response.json();
+}
+
 // Function to fetch recent large USDC transfers
 export async function fetchLargeTransfers(limit: number = 10): Promise<TokenTransfer[]> {
   try {
@@ -215,10 +238,36 @@ export async function fetchLargeTransfers(limit: number = 10): Promise<TokenTran
     const networkId = 'mainnet';
     const contract = USDC_CONTRACTS['ethereum'];
     
-    // Use a known address that has USDC transfers
-    const address = '0x47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503'; // Binance
-    
     try {
+      // Fetch transfers directly by USDC contract
+      const response = await fetchTokenTransfersByContract(contract, networkId, limit);
+      
+      // Check if transfers property exists and has data
+      if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+        console.log(`Found ${response.data.length} USDC transfers`);
+        
+        return response.data.map((transfer: any) => ({
+          from: transfer.from,
+          to: transfer.to,
+          amount: transfer.amount,
+          timestamp: transfer.timestamp,
+          transaction_hash: transfer.transaction_hash,
+          network: 'ethereum',
+        }));
+      }
+      
+      console.log('No USDC transfers found in API response');
+      // Return empty array if no real data is available
+      return [];
+    } catch (apiError) {
+      console.error('Error fetching USDC transfers from API:', apiError);
+      
+      // Fallback to the old method if the direct contract approach fails
+      console.log('Falling back to address-based transfer fetching');
+      
+      // Use a known address that has USDC transfers
+      const address = '0x47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503'; // Binance
+      
       const response = await fetchTokenTransfers(address, networkId, limit);
       
       // Check if transfers property exists and has data
@@ -229,7 +278,7 @@ export async function fetchLargeTransfers(limit: number = 10): Promise<TokenTran
           transfer.symbol === 'USDC'
         );
         
-        console.log(`Found ${usdcTransfers.length} USDC transfers out of ${response.data.length} total transfers`);
+        console.log(`Found ${usdcTransfers.length} USDC transfers out of ${response.data.length} total transfers using fallback method`);
         
         if (usdcTransfers.length > 0) {
           return usdcTransfers.map((transfer: any) => ({
@@ -243,12 +292,7 @@ export async function fetchLargeTransfers(limit: number = 10): Promise<TokenTran
         }
       }
       
-      console.log('No real transfers found in API response');
-      // Return empty array if no real data is available
-      return [];
-    } catch (apiError) {
-      console.error('Error fetching transfers from API:', apiError);
-      // Return empty array if there's an error
+      // Return empty array if fallback also fails
       return [];
     }
   } catch (error) {
