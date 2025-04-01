@@ -2,21 +2,26 @@
 
 import { useUSDC } from "@/lib/context/usdc-context";
 
-function formatAddress(address: string): string {
+function formatAddress(address: string | undefined): string {
+  if (!address) return 'Unknown';
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 }
 
-function formatAmount(amount: string): string {
+function formatAmount(amount: string | undefined): string {
+  if (!amount) return '$0.00';
   const value = parseFloat(amount);
   return `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
-function formatDate(timestamp: string): string {
+function formatDate(timestamp: string | undefined): string {
+  if (!timestamp) return 'Unknown';
   const date = new Date(timestamp);
   return date.toLocaleString();
 }
 
-function getExplorerUrl(network: string, hash: string, type: 'tx' | 'address'): string {
+function getExplorerUrl(network: string, hash: string | undefined, type: 'tx' | 'address'): string {
+  if (!hash) return '#';
+  
   const explorers: { [key: string]: string } = {
     ethereum: 'https://etherscan.io',
     polygon: 'https://polygonscan.com',
