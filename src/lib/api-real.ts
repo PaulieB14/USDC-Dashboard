@@ -10,7 +10,7 @@ export const USDC_CONTRACTS: { [key: string]: string } = {
 };
 
 // Network IDs for API calls - based on The Graph Token API documentation
-const NETWORK_IDS: { [key: string]: string } = {
+export const NETWORK_IDS: { [key: string]: string } = {
   ethereum: 'mainnet',
   polygon: 'matic',
   arbitrum: 'arbitrum-one',
@@ -126,26 +126,7 @@ export async function fetchNetworkUSDCMetrics(network: string): Promise<TokenMet
   }
   
   // Get the correct network ID for the API
-  let networkId;
-  switch (normalizedNetwork) {
-    case 'ethereum':
-      networkId = 'mainnet';
-      break;
-    case 'polygon':
-      networkId = 'matic';
-      break;
-    case 'arbitrum':
-      networkId = 'arbitrum-one';
-      break;
-    case 'optimism':
-      networkId = 'optimism';
-      break;
-    case 'base':
-      networkId = 'base';
-      break;
-    default:
-      networkId = normalizedNetwork;
-  }
+  const networkId = NETWORK_IDS[normalizedNetwork] || normalizedNetwork;
   
   // Use a known address with USDC for each network
   // These are major holders or protocol addresses that should have USDC
@@ -228,9 +209,9 @@ export async function fetchAllNetworksUSDCMetrics(): Promise<TokenMetrics[]> {
 }
 
 // Function to fetch recent large USDC transfers
-export async function fetchLargeTransfers(network: string = 'mainnet', limit: number = 10): Promise<TokenTransfer[]> {
+export async function fetchLargeTransfers(limit: number = 10): Promise<TokenTransfer[]> {
   try {
-    // Only get real transfer data from the API
+    // Only get real transfer data from the API - hardcoded to mainnet for now
     const networkId = 'mainnet';
     const contract = USDC_CONTRACTS['ethereum'];
     
@@ -295,7 +276,7 @@ export async function fetchMintBurnData(): Promise<MintBurnData[]> {
 }
 
 // Function to get current USDC price
-export async function getCurrentUSDCPrice(network: string = 'mainnet'): Promise<number> {
-  const metrics = await fetchNetworkUSDCMetrics(network);
+export async function getCurrentUSDCPrice(): Promise<number> {
+  const metrics = await fetchNetworkUSDCMetrics('mainnet');
   return metrics.price;
 }

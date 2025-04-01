@@ -19,7 +19,7 @@ import {
   USDC_CONTRACTS,
 } from './api-real';
 
-// Re-export all types and functions
+// Re-export functions and values
 export {
   fetchTokenBalances,
   fetchTokenTransfers,
@@ -30,12 +30,16 @@ export {
   fetchHistoricalWalletCount,
   fetchMintBurnData,
   getCurrentUSDCPrice,
+  USDC_CONTRACTS,
+};
+
+// Re-export types
+export type {
   TokenBalance,
   TokenBalancesResponse,
   TokenTransfer,
   TokenMetrics,
   MintBurnData,
-  USDC_CONTRACTS,
 };
 
 // Function to fetch USDC balances across multiple networks
@@ -47,9 +51,6 @@ export async function fetchUSDCBalances(address: string): Promise<{ [network: st
   await Promise.all(
     networks.map(async (network) => {
       try {
-        // Get the network metrics
-        const metrics = await fetchNetworkUSDCMetrics(network);
-        
         // Use a known address that holds USDC if no address is provided
         const targetAddress = address || '0x47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503';
         
