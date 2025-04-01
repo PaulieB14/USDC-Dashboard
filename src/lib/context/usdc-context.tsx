@@ -57,8 +57,8 @@ export function USDCProvider({ children }: { children: ReactNode }) {
         priceData
       ] = await Promise.all([
         fetchAllNetworksUSDCMetrics(),
-        fetchLargeTransfers('mainnet', 10),
-        getCurrentUSDCPrice('mainnet')
+        fetchLargeTransfers(10),
+        getCurrentUSDCPrice()
       ]);
 
       // Try to fetch historical data, but handle errors gracefully
