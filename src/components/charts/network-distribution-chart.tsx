@@ -25,7 +25,16 @@ const NETWORK_COLORS = {
 export default function NetworkDistributionChart() {
   const { networkMetrics, isLoading } = useUSDC();
 
+  // Debug logging
+  console.log("Network metrics in chart:", networkMetrics);
+  
+  // Log the total supply for each network
+  networkMetrics.forEach((metric) => {
+    console.log(`${metric.network} total supply: ${metric.totalSupply}`);
+  });
+
   // Process data for the chart
+  // Use logarithmic scale to better visualize the data
   const chartData = {
     labels: networkMetrics.map((metric) => {
       // Capitalize first letter of network name
@@ -34,13 +43,18 @@ export default function NetworkDistributionChart() {
     }),
     datasets: [
       {
-        data: networkMetrics.map((metric) => metric.totalSupply / 1_000_000_000), // Convert to billions
+        // Use logarithm of values for better visualization
+        // Add 1 to avoid log(0) and take log base 10
+        data: networkMetrics.map((metric) => Math.log10(metric.totalSupply + 1)),
         backgroundColor: networkMetrics.map((metric) => NETWORK_COLORS[metric.network as keyof typeof NETWORK_COLORS]),
         borderColor: networkMetrics.map((metric) => NETWORK_COLORS[metric.network as keyof typeof NETWORK_COLORS].replace("0.8", "1")),
         borderWidth: 1,
       },
     ],
   };
+  
+  // Debug logging for chart data
+  console.log("Chart data:", chartData);
 
   const options = {
     responsive: true,
@@ -59,10 +73,25 @@ export default function NetworkDistributionChart() {
       tooltip: {
         callbacks: {
           label: function(context: any) {
-            const value = context.raw;
-            const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
+            // Get the value directly
+            const index = context.dataIndex;
+            const value = networkMetrics[index].totalSupply;
+            
+            // Format the value based on its size
+            let formattedValue;
+            if (value >= 1_000_000_000) {
+              formattedValue = `$${(value / 1_000_000_000).toFixed(2)}B`; // Show as billions
+            } else if (value >= 1_000_000) {
+              formattedValue = `$${(value / 1_000_000).toFixed(2)}M`; // Show as millions
+            } else {
+              formattedValue = `$${value.toFixed(2)}`; // Show as dollars
+            }
+            
+            // Calculate percentage based on the total
+            const total = networkMetrics.reduce((sum, metric) => sum + metric.totalSupply, 0);
             const percentage = Math.round((value / total) * 100);
-            return `$${value.toFixed(2)}B (${percentage}%)`;
+            
+            return `${formattedValue} (${percentage}%)`;
           },
         },
       },

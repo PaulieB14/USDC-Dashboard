@@ -3,6 +3,27 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useUSDC } from "@/lib/context/usdc-context";
 
+// Helper function to format large numbers
+function formatLargeNumber(num: number): string {
+  // Now format based on size
+  const billion = 1_000_000_000;
+  const trillion = 1_000_000_000_000;
+  
+  if (num >= trillion) {
+    // Format as trillions
+    return `${(num / trillion).toFixed(2)}T`;
+  } else if (num >= billion) {
+    // Format as billions
+    return `${(num / billion).toFixed(2)}B`;
+  } else if (num >= 1_000_000) {
+    // Format as millions
+    return `${(num / 1_000_000).toFixed(2)}M`;
+  } else {
+    // Format as thousands
+    return `${(num / 1_000).toFixed(2)}K`;
+  }
+}
+
 export default function MetricsCards() {
   const { networkMetrics, historicalSupply, historicalWalletCount, currentPrice, isLoading } = useUSDC();
 
@@ -54,7 +75,7 @@ export default function MetricsCards() {
           ) : (
             <>
               <div className="text-4xl font-bold text-emerald-700">
-                ${(totalSupply / 1_000_000_000).toFixed(1)}B
+                ${formatLargeNumber(totalSupply)}
               </div>
               <div className={`text-sm font-medium ${supplyChangePercentage >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                 {supplyChangePercentage >= 0 ? '+' : ''}{supplyChangePercentage.toFixed(2)}% from last period

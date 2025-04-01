@@ -1,8 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { 
-  fetchAllNetworksUSDCMetrics, 
+import {
+  fetchAllNetworksUSDCMetrics,
   fetchHistoricalSupply,
   fetchHistoricalWalletCount,
   fetchLargeTransfers,
@@ -11,7 +11,7 @@ import {
   TokenMetrics,
   TokenTransfer,
   MintBurnData
-} from "@/lib/api-real";
+} from "@/lib/api";
 
 interface USDCContextType {
   networkMetrics: TokenMetrics[];
