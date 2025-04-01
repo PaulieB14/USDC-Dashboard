@@ -7,6 +7,7 @@ import NetworkDistributionChart from "@/components/charts/network-distribution-c
 import WalletCountChart from "@/components/charts/wallet-count-chart";
 import PegStabilityGauge from "@/components/charts/peg-stability-gauge";
 import MetricsCards from "@/components/metrics-cards";
+import ApiErrorMessage from "@/components/api-error-message";
 
 export default function Home() {
   return (
@@ -42,6 +43,9 @@ export default function Home() {
           </div>
         </div>
       </div>
+      
+      {/* API Error Message */}
+      <ApiErrorMessage />
       
       <div className="max-w-7xl mx-auto w-full p-6">
         <MetricsCards />

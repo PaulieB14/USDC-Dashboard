@@ -24,7 +24,7 @@ A comprehensive dashboard for visualizing USDC metrics across multiple networks 
 ### Prerequisites
 
 - Node.js 18+ and npm
-- A Graph Token API key
+- A Graph Token API key (required)
 
 ### Installation
 
@@ -41,8 +41,10 @@ A comprehensive dashboard for visualizing USDC metrics across multiple networks 
 
 3. Create a `.env.local` file in the root directory and add your Graph Token API key:
    ```
-   NEXT_PUBLIC_GRAPH_API_TOKEN=your_graph_token_api_key_here
+   NEXT_PUBLIC_GRAPH_API_TOKEN=your_actual_api_key_here
    ```
+   
+   **IMPORTANT**: You must replace `your_actual_api_key_here` with a valid API key from The Graph Token API. The dashboard uses only real data and will not function without a valid API key.
 
 4. Start the development server:
    ```bash
@@ -61,13 +63,22 @@ To use this dashboard, you'll need a Graph Token API key:
 4. Create a new API key
 5. Copy the key and add it to your `.env.local` file
 
+## API Endpoints Used
+
+The dashboard uses several endpoints from The Graph Token API:
+
+- `/token/{network}/{contract}/metrics` - For current token metrics
+- `/token/{network}/{contract}/historical` - For historical supply and wallet data
+- `/token/{network}/{contract}/transfers` - For large transfer data
+- `/token/{network}/{contract}/mints-burns` - For mint/burn activity
+
 ## Deployment
 
 The dashboard can be deployed to Vercel:
 
 1. Push your code to a GitHub repository
 2. Connect the repository to Vercel
-3. Add the `NEXT_PUBLIC_GRAPH_API_TOKEN` environment variable in the Vercel project settings
+3. Add the `NEXT_PUBLIC_GRAPH_API_TOKEN` environment variable in the Vercel project settings with your actual API key
 4. Deploy the project
 
 ## License

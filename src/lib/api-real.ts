@@ -54,41 +54,28 @@ export async function fetchNetworkUSDCMetrics(network: string): Promise<TokenMet
   
   const apiUrl = `https://token-api.thegraph.com/token/${networkId}/${contractAddress}/metrics`;
   
-  try {
-    const response = await fetch(apiUrl, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_GRAPH_API_TOKEN}`,
-      },
-    });
-    
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    return {
-      network,
-      totalSupply: parseFloat(data.total_supply) || 0,
-      holderCount: data.holder_count || 0,
-      price: data.price_usd || 1.0, // Default to 1.0 if not available
-      marketCap: parseFloat(data.market_cap_usd) || 0,
-      dailyVolume: parseFloat(data.volume_24h_usd) || 0,
-    };
-  } catch (error) {
-    console.error(`Error fetching USDC metrics for ${network}:`, error);
-    // Return default values if API call fails
-    return {
-      network,
-      totalSupply: 0,
-      holderCount: 0,
-      price: 1.0,
-      marketCap: 0,
-      dailyVolume: 0,
-    };
+  const response = await fetch(apiUrl, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${process.env.NEXT_PUBLIC_GRAPH_API_TOKEN}`,
+    },
+  });
+  
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
   }
+  
+  const data = await response.json();
+  
+  return {
+    network,
+    totalSupply: parseFloat(data.total_supply) || 0,
+    holderCount: data.holder_count || 0,
+    price: data.price_usd || 1.0, // Default to 1.0 if not available
+    marketCap: parseFloat(data.market_cap_usd) || 0,
+    dailyVolume: parseFloat(data.volume_24h_usd) || 0,
+  };
 }
 
 // Function to fetch USDC metrics across all networks
@@ -120,29 +107,24 @@ export async function fetchLargeTransfers(network: string = 'mainnet', limit: nu
   
   const apiUrl = `https://token-api.thegraph.com/token/${network}/${contractAddress}/transfers?limit=${limit}&min_amount=1000000`;
   
-  try {
-    const response = await fetch(apiUrl, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_GRAPH_API_TOKEN}`,
-      },
-    });
-    
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    return data.transfers.map((transfer: any) => ({
-      ...transfer,
-      network: network === 'mainnet' ? 'ethereum' : network,
-    }));
-  } catch (error) {
-    console.error('Error fetching large transfers:', error);
-    return [];
+  const response = await fetch(apiUrl, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${process.env.NEXT_PUBLIC_GRAPH_API_TOKEN}`,
+    },
+  });
+  
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
   }
+  
+  const data = await response.json();
+  
+  return data.transfers.map((transfer: any) => ({
+    ...transfer,
+    network: network === 'mainnet' ? 'ethereum' : network,
+  }));
 }
 
 // Function to fetch historical USDC supply data
@@ -155,29 +137,24 @@ export async function fetchHistoricalSupply(network: string = 'mainnet', days: n
   
   const apiUrl = `https://token-api.thegraph.com/token/${network}/${contractAddress}/historical?days=${days}&metric=total_supply`;
   
-  try {
-    const response = await fetch(apiUrl, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_GRAPH_API_TOKEN}`,
-      },
-    });
-    
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    return data.datapoints.map((point: any) => ({
-      date: point.timestamp.slice(0, 10), // YYYY-MM-DD format
-      supply: parseFloat(point.value) || 0,
-    }));
-  } catch (error) {
-    console.error('Error fetching historical supply data:', error);
-    return [];
+  const response = await fetch(apiUrl, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${process.env.NEXT_PUBLIC_GRAPH_API_TOKEN}`,
+    },
+  });
+  
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
   }
+  
+  const data = await response.json();
+  
+  return data.datapoints.map((point: any) => ({
+    date: point.timestamp.slice(0, 10), // YYYY-MM-DD format
+    supply: parseFloat(point.value) || 0,
+  }));
 }
 
 // Function to fetch historical wallet count data
@@ -190,29 +167,24 @@ export async function fetchHistoricalWalletCount(network: string = 'mainnet', da
   
   const apiUrl = `https://token-api.thegraph.com/token/${network}/${contractAddress}/historical?days=${days}&metric=holder_count`;
   
-  try {
-    const response = await fetch(apiUrl, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_GRAPH_API_TOKEN}`,
-      },
-    });
-    
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    return data.datapoints.map((point: any) => ({
-      date: point.timestamp.slice(0, 10), // YYYY-MM-DD format
-      count: parseInt(point.value) || 0,
-    }));
-  } catch (error) {
-    console.error('Error fetching historical wallet count data:', error);
-    return [];
+  const response = await fetch(apiUrl, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${process.env.NEXT_PUBLIC_GRAPH_API_TOKEN}`,
+    },
+  });
+  
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
   }
+  
+  const data = await response.json();
+  
+  return data.datapoints.map((point: any) => ({
+    date: point.timestamp.slice(0, 10), // YYYY-MM-DD format
+    count: parseInt(point.value) || 0,
+  }));
 }
 
 // Function to fetch mint/burn data
@@ -225,61 +197,29 @@ export async function fetchMintBurnData(network: string = 'mainnet', days: numbe
   
   const apiUrl = `https://token-api.thegraph.com/token/${network}/${contractAddress}/mints-burns?days=${days}`;
   
-  try {
-    const response = await fetch(apiUrl, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_GRAPH_API_TOKEN}`,
-      },
-    });
-    
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    return data.datapoints.map((point: any) => ({
-      date: point.timestamp.slice(0, 10), // YYYY-MM-DD format
-      minted: parseFloat(point.minted) || 0,
-      burned: parseFloat(point.burned) || 0,
-    }));
-  } catch (error) {
-    console.error('Error fetching mint/burn data:', error);
-    // Return simulated data if API call fails
-    const data = [];
-    const today = new Date();
-    
-    // Generate data for the last 7 days
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() - i);
-      
-      // Random mint between 50M and 200M
-      const minted = Math.round(50_000_000 + Math.random() * 150_000_000);
-      
-      // Random burn between 40M and 180M
-      const burned = Math.round(40_000_000 + Math.random() * 140_000_000);
-      
-      data.unshift({
-        date: date.toISOString().slice(0, 10), // YYYY-MM-DD format
-        minted,
-        burned,
-      });
-    }
-    
-    return data;
+  const response = await fetch(apiUrl, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${process.env.NEXT_PUBLIC_GRAPH_API_TOKEN}`,
+    },
+  });
+  
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
   }
+  
+  const data = await response.json();
+  
+  return data.datapoints.map((point: any) => ({
+    date: point.timestamp.slice(0, 10), // YYYY-MM-DD format
+    minted: parseFloat(point.minted) || 0,
+    burned: parseFloat(point.burned) || 0,
+  }));
 }
 
 // Function to get current USDC price
 export async function getCurrentUSDCPrice(network: string = 'mainnet'): Promise<number> {
-  try {
-    const metrics = await fetchNetworkUSDCMetrics(network === 'mainnet' ? 'ethereum' : network);
-    return metrics.price;
-  } catch (error) {
-    console.error('Error fetching USDC price:', error);
-    return 1.0; // Default to 1.0 if API call fails
-  }
+  const metrics = await fetchNetworkUSDCMetrics(network === 'mainnet' ? 'ethereum' : network);
+  return metrics.price;
 }

@@ -41,6 +41,14 @@ export function USDCProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     setError(null);
 
+    // Check if API key is set
+    const apiKey = process.env.NEXT_PUBLIC_GRAPH_API_TOKEN;
+    if (!apiKey || apiKey === 'your_graph_token_api_key_here' || apiKey === 'your_actual_api_key_here') {
+      setError("API key is missing or invalid. Please add a valid Graph Token API key to your .env.local file.");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       // Fetch all data in parallel
       const [
@@ -65,9 +73,15 @@ export function USDCProvider({ children }: { children: ReactNode }) {
       setMintBurnData(mintBurnDataResult);
       setLargeTransfers(transfersData);
       setCurrentPrice(priceData);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error fetching USDC data:", err);
-      setError("Failed to fetch USDC data. Please check your API key and try again.");
+      
+      // Check for authentication errors (401)
+      if (err.message && err.message.includes('401')) {
+        setError("Authentication failed. Please check your Graph Token API key in the .env.local file.");
+      } else {
+        setError(`Failed to fetch USDC data: ${err.message || 'Unknown error'}`);
+      }
     } finally {
       setIsLoading(false);
     }
