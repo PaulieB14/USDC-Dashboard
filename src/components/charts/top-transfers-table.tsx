@@ -7,13 +7,26 @@ function formatAddress(address: string): string {
 }
 
 function formatAmount(amount: string): string {
-  const value = parseFloat(amount) / 1_000_000; // Convert from USDC units to millions
-  return `$${value.toFixed(2)}M`;
+  const value = parseFloat(amount);
+  return `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function formatDate(timestamp: string): string {
   const date = new Date(timestamp);
   return date.toLocaleString();
+}
+
+function getExplorerUrl(network: string, hash: string, type: 'tx' | 'address'): string {
+  const explorers: { [key: string]: string } = {
+    ethereum: 'https://etherscan.io',
+    polygon: 'https://polygonscan.com',
+    arbitrum: 'https://arbiscan.io',
+    optimism: 'https://optimistic.etherscan.io',
+    base: 'https://basescan.org',
+  };
+  
+  const baseUrl = explorers[network] || explorers.ethereum;
+  return `${baseUrl}/${type}/${hash}`;
 }
 
 export default function TopTransfersTable() {
@@ -34,6 +47,7 @@ export default function TopTransfersTable() {
               <th className="text-right py-2">Amount</th>
               <th className="text-right py-2">Network</th>
               <th className="text-right py-2">Time</th>
+              <th className="text-right py-2">Transaction</th>
             </tr>
           </thead>
           <tbody>
@@ -41,7 +55,7 @@ export default function TopTransfersTable() {
               <tr key={index} className="border-b hover:bg-neutral-50">
                 <td className="py-2 font-mono text-xs">
                   <a
-                    href={`https://etherscan.io/address/${transfer.from}`}
+                    href={getExplorerUrl(transfer.network, transfer.from, 'address')}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:underline"
@@ -51,7 +65,7 @@ export default function TopTransfersTable() {
                 </td>
                 <td className="py-2 font-mono text-xs">
                   <a
-                    href={`https://etherscan.io/address/${transfer.to}`}
+                    href={getExplorerUrl(transfer.network, transfer.to, 'address')}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:underline"
@@ -67,6 +81,16 @@ export default function TopTransfersTable() {
                 </td>
                 <td className="text-right py-2 text-neutral-600">
                   {formatDate(transfer.timestamp)}
+                </td>
+                <td className="text-right py-2 font-mono text-xs">
+                  <a
+                    href={getExplorerUrl(transfer.network, transfer.transaction_hash, 'tx')}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    {formatAddress(transfer.transaction_hash)}
+                  </a>
                 </td>
               </tr>
             ))}
