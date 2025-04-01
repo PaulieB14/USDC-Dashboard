@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# USDC Dashboard
+
+A comprehensive dashboard for visualizing USDC metrics across multiple networks using The Graph Token API.
+
+## Features
+
+- **Multi-Network Support**: Track USDC across Ethereum, Polygon, Arbitrum, Optimism, and Base networks
+- **Interactive Visualizations**: View key metrics with intuitive charts and graphs
+- **Real-time Data**: Connect to The Graph Token API for up-to-date information
+- **Responsive Design**: Works on desktop and mobile devices
+
+## Key Metrics
+
+- **Total USDC Supply**: Track the circulating supply over time
+- **Minting & Burning**: Monitor daily minting and burning activity
+- **Large Transfers**: View the top 10 largest transfers in the last 24 hours
+- **Network Distribution**: See how USDC is distributed across different blockchains
+- **Wallet Activity**: Track the number of unique wallets holding USDC
+- **Peg Stability**: Monitor USDC's price stability relative to its $1.00 peg
+
+## Technology Stack
+
+- **Next.js**: React framework for the frontend
+- **TypeScript**: Type-safe JavaScript
+- **Tailwind CSS**: Utility-first CSS framework
+- **shadcn/ui**: High-quality UI components
+- **Chart.js**: Flexible JavaScript charting library
+- **The Graph Token API**: Data source for token information
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository:
+   ```
+   git clone https://github.com/PaulieB14/USDC-Dashboard.git
+   cd USDC-Dashboard
+   ```
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+2. Install dependencies:
+   ```
+   npm install
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. Create a `.env.local` file with your Graph Token API JWT:
+   ```
+   GRAPH_API_TOKEN=your_jwt_token_here
+   ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+4. Run the development server:
+   ```
+   npm run dev
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Learn More
+## API Configuration
 
-To learn more about Next.js, take a look at the following resources:
+This dashboard uses The Graph Token API to fetch USDC data. You'll need to:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Sign up on [The Graph Market](https://thegraph.com/explorer/marketplace)
+2. Generate a JWT token for your API key
+3. Add the token to your `.env.local` file
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## License
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
