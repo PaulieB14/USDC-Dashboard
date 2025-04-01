@@ -222,11 +222,14 @@ export async function fetchLargeTransfers(limit: number = 10): Promise<TokenTran
       const response = await fetchTokenTransfers(address, networkId, limit);
       
       // Check if transfers property exists and has data
-      if (response.transfers && Array.isArray(response.transfers) && response.transfers.length > 0) {
+      if (response.data && Array.isArray(response.data) && response.data.length > 0) {
         // Filter for USDC transfers
-        const usdcTransfers = response.transfers.filter((transfer: any) => 
-          transfer.contract && transfer.contract.toLowerCase() === contract.toLowerCase()
+        const usdcTransfers = response.data.filter((transfer: any) => 
+          transfer.contract && transfer.contract.toLowerCase() === contract.toLowerCase() &&
+          transfer.symbol === 'USDC'
         );
+        
+        console.log(`Found ${usdcTransfers.length} USDC transfers out of ${response.data.length} total transfers`);
         
         if (usdcTransfers.length > 0) {
           return usdcTransfers.map((transfer: any) => ({
