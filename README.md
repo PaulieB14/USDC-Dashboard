@@ -4,62 +4,72 @@ A comprehensive dashboard for visualizing USDC metrics across multiple networks 
 
 ## Features
 
-- **Multi-Network Support**: Track USDC across Ethereum, Polygon, Arbitrum, Optimism, and Base networks
-- **Interactive Visualizations**: View key metrics with intuitive charts and graphs
-- **Real-time Data**: Connect to The Graph Token API for up-to-date information
-- **Responsive Design**: Works on desktop and mobile devices
+- Real-time USDC metrics across Ethereum, Polygon, Arbitrum, Optimism, and Base networks
+- Historical supply and wallet count data
+- Mint/burn activity tracking
+- Large transfer monitoring
+- Network distribution visualization
+- USDC price stability gauge
 
-## Key Metrics
+## Technologies Used
 
-- **Total USDC Supply**: Track the circulating supply over time
-- **Minting & Burning**: Monitor daily minting and burning activity
-- **Large Transfers**: View the top 10 largest transfers in the last 24 hours
-- **Network Distribution**: See how USDC is distributed across different blockchains
-- **Wallet Activity**: Track the number of unique wallets holding USDC
-- **Peg Stability**: Monitor USDC's price stability relative to its $1.00 peg
-
-## Technology Stack
-
-- **Next.js**: React framework for the frontend
-- **TypeScript**: Type-safe JavaScript
-- **Tailwind CSS**: Utility-first CSS framework
-- **shadcn/ui**: High-quality UI components
-- **Chart.js**: Flexible JavaScript charting library
-- **The Graph Token API**: Data source for token information
+- Next.js 15
+- React
+- Chart.js
+- Tailwind CSS
+- The Graph Token API
 
 ## Getting Started
 
+### Prerequisites
+
+- Node.js 18+ and npm
+- A Graph Token API key
+
+### Installation
+
 1. Clone the repository:
-   ```
-   git clone https://github.com/PaulieB14/USDC-Dashboard.git
-   cd USDC-Dashboard
+   ```bash
+   git clone https://github.com/yourusername/usdc-dashboard.git
+   cd usdc-dashboard
    ```
 
 2. Install dependencies:
-   ```
+   ```bash
    npm install
    ```
 
-3. Create a `.env.local` file with your Graph Token API JWT:
+3. Create a `.env.local` file in the root directory and add your Graph Token API key:
    ```
-   GRAPH_API_TOKEN=your_jwt_token_here
+   NEXT_PUBLIC_GRAPH_API_TOKEN=your_graph_token_api_key_here
    ```
 
-4. Run the development server:
-   ```
+4. Start the development server:
+   ```bash
    npm run dev
    ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the dashboard.
 
-## API Configuration
+## Obtaining a Graph Token API Key
 
-This dashboard uses The Graph Token API to fetch USDC data. You'll need to:
+To use this dashboard, you'll need a Graph Token API key:
 
-1. Sign up on [The Graph Market](https://thegraph.com/explorer/marketplace)
-2. Generate a JWT token for your API key
-3. Add the token to your `.env.local` file
+1. Visit [The Graph Token API](https://thegraph.com/token-api) website
+2. Sign up for an account or log in
+3. Navigate to the API Keys section
+4. Create a new API key
+5. Copy the key and add it to your `.env.local` file
+
+## Deployment
+
+The dashboard can be deployed to Vercel:
+
+1. Push your code to a GitHub repository
+2. Connect the repository to Vercel
+3. Add the `NEXT_PUBLIC_GRAPH_API_TOKEN` environment variable in the Vercel project settings
+4. Deploy the project
 
 ## License
 
-MIT
+This project is licensed under the MIT License - see the LICENSE file for details.

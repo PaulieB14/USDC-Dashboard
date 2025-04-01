@@ -6,6 +6,7 @@ import TopTransfersTable from "@/components/charts/top-transfers-table";
 import NetworkDistributionChart from "@/components/charts/network-distribution-chart";
 import WalletCountChart from "@/components/charts/wallet-count-chart";
 import PegStabilityGauge from "@/components/charts/peg-stability-gauge";
+import MetricsCards from "@/components/metrics-cards";
 
 export default function Home() {
   return (
@@ -43,62 +44,7 @@ export default function Home() {
       </div>
       
       <div className="max-w-7xl mx-auto w-full p-6">
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="border-0 shadow-md bg-gradient-to-br from-white to-neutral-50">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-2xl flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Total USDC Supply
-              </CardTitle>
-              <CardDescription>
-                Current circulating supply across all chains
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-4xl font-bold text-emerald-700">$30.2B</div>
-              <div className="text-sm text-emerald-600 font-medium">+2.3% from last month</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="border-0 shadow-md bg-gradient-to-br from-white to-neutral-50">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-2xl flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                Active Wallets
-              </CardTitle>
-              <CardDescription>
-                Unique wallets holding USDC
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-4xl font-bold text-blue-700">512,487</div>
-              <div className="text-sm text-blue-600 font-medium">+1.8% from last week</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="border-0 shadow-md bg-gradient-to-br from-white to-neutral-50">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-2xl flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 8h6m-5 0a3 3 0 110 6H9l3 3m-3-6h6m6 1a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                USDC Price
-              </CardTitle>
-              <CardDescription>
-                Current price relative to USD
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-4xl font-bold text-purple-700">$0.9998</div>
-              <div className="text-sm text-purple-600 font-medium">-0.02% from target</div>
-            </CardContent>
-          </Card>
-        </div>
+        <MetricsCards />
       </div>
 
       <Tabs defaultValue="overview" className="max-w-7xl mx-auto w-full p-6 space-y-4">
@@ -277,151 +223,6 @@ export default function Home() {
               <NetworkDistributionChart />
             </CardContent>
           </Card>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <Card className="border-0 shadow-md">
-              <CardHeader>
-                <CardTitle>Network Comparison</CardTitle>
-                <CardDescription>Key metrics across networks</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left py-2">Network</th>
-                        <th className="text-right py-2">USDC Supply</th>
-                        <th className="text-right py-2">Active Wallets</th>
-                        <th className="text-right py-2">Avg. Transaction</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-b">
-                        <td className="py-2 flex items-center">
-                          <div className="w-2 h-2 rounded-full bg-blue-400 mr-2"></div>
-                          Ethereum
-                        </td>
-                        <td className="text-right py-2">$18.5B</td>
-                        <td className="text-right py-2">284,521</td>
-                        <td className="text-right py-2">$12,450</td>
-                      </tr>
-                      <tr className="border-b">
-                        <td className="py-2 flex items-center">
-                          <div className="w-2 h-2 rounded-full bg-purple-400 mr-2"></div>
-                          Polygon
-                        </td>
-                        <td className="text-right py-2">$5.2B</td>
-                        <td className="text-right py-2">156,782</td>
-                        <td className="text-right py-2">$3,250</td>
-                      </tr>
-                      <tr className="border-b">
-                        <td className="py-2 flex items-center">
-                          <div className="w-2 h-2 rounded-full bg-cyan-400 mr-2"></div>
-                          Arbitrum
-                        </td>
-                        <td className="text-right py-2">$3.1B</td>
-                        <td className="text-right py-2">89,456</td>
-                        <td className="text-right py-2">$5,780</td>
-                      </tr>
-                      <tr className="border-b">
-                        <td className="py-2 flex items-center">
-                          <div className="w-2 h-2 rounded-full bg-red-400 mr-2"></div>
-                          Optimism
-                        </td>
-                        <td className="text-right py-2">$2.4B</td>
-                        <td className="text-right py-2">62,345</td>
-                        <td className="text-right py-2">$4,120</td>
-                      </tr>
-                      <tr>
-                        <td className="py-2 flex items-center">
-                          <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
-                          Base
-                        </td>
-                        <td className="text-right py-2">$1.0B</td>
-                        <td className="text-right py-2">42,891</td>
-                        <td className="text-right py-2">$2,890</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="border-0 shadow-md">
-              <CardHeader>
-                <CardTitle>Network Growth Trends</CardTitle>
-                <CardDescription>Month-over-month growth by network</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-sm font-medium flex items-center">
-                        <div className="w-2 h-2 rounded-full bg-blue-400 mr-2"></div>
-                        Ethereum
-                      </span>
-                      <span className="text-sm font-medium text-blue-600">+1.2%</span>
-                    </div>
-                    <div className="w-full bg-neutral-200 rounded-full h-2">
-                      <div className="bg-blue-400 h-2 rounded-full" style={{ width: '60%' }}></div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-sm font-medium flex items-center">
-                        <div className="w-2 h-2 rounded-full bg-purple-400 mr-2"></div>
-                        Polygon
-                      </span>
-                      <span className="text-sm font-medium text-purple-600">+3.8%</span>
-                    </div>
-                    <div className="w-full bg-neutral-200 rounded-full h-2">
-                      <div className="bg-purple-400 h-2 rounded-full" style={{ width: '75%' }}></div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-sm font-medium flex items-center">
-                        <div className="w-2 h-2 rounded-full bg-cyan-400 mr-2"></div>
-                        Arbitrum
-                      </span>
-                      <span className="text-sm font-medium text-cyan-600">+5.2%</span>
-                    </div>
-                    <div className="w-full bg-neutral-200 rounded-full h-2">
-                      <div className="bg-cyan-400 h-2 rounded-full" style={{ width: '82%' }}></div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-sm font-medium flex items-center">
-                        <div className="w-2 h-2 rounded-full bg-red-400 mr-2"></div>
-                        Optimism
-                      </span>
-                      <span className="text-sm font-medium text-red-600">+4.7%</span>
-                    </div>
-                    <div className="w-full bg-neutral-200 rounded-full h-2">
-                      <div className="bg-red-400 h-2 rounded-full" style={{ width: '78%' }}></div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-sm font-medium flex items-center">
-                        <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
-                        Base
-                      </span>
-                      <span className="text-sm font-medium text-blue-600">+8.9%</span>
-                    </div>
-                    <div className="w-full bg-neutral-200 rounded-full h-2">
-                      <div className="bg-blue-500 h-2 rounded-full" style={{ width: '95%' }}></div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </TabsContent>
       </Tabs>
     </main>

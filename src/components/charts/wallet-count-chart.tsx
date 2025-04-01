@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -11,8 +10,9 @@ import {
   Title,
   Tooltip,
   Legend,
+  Filler,
 } from "chart.js";
-import { simulateWalletCountData } from "@/lib/api";
+import { useUSDC } from "@/lib/context/usdc-context";
 
 // Register ChartJS components
 ChartJS.register(
@@ -22,26 +22,21 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 );
 
 export default function WalletCountChart() {
-  const [data, setData] = useState<{ date: string; count: number }[]>([]);
-
-  useEffect(() => {
-    // In a real app, this would fetch from an API
-    const walletData = simulateWalletCountData();
-    setData(walletData);
-  }, []);
+  const { historicalWalletCount, isLoading } = useUSDC();
 
   const chartData = {
-    labels: data.map((d) => d.date),
+    labels: historicalWalletCount.map((d) => d.date),
     datasets: [
       {
         label: "Unique Wallets",
-        data: data.map((d) => d.count),
-        borderColor: "rgb(25, 118, 210)",
-        backgroundColor: "rgba(25, 118, 210, 0.1)",
+        data: historicalWalletCount.map((d) => d.count),
+        borderColor: "rgb(79, 129, 189)",
+        backgroundColor: "rgba(79, 129, 189, 0.1)",
         borderWidth: 2,
         fill: true,
         tension: 0.4,
@@ -49,7 +44,7 @@ export default function WalletCountChart() {
     ],
   };
 
-  const options: any = {
+  const options = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -58,8 +53,8 @@ export default function WalletCountChart() {
       },
       tooltip: {
         callbacks: {
-          label: function (tooltipItem: any) {
-            return `${tooltipItem.raw.toLocaleString()} wallets`;
+          label: function(context: any) {
+            return `${context.raw.toLocaleString()} wallets`;
           },
         },
       },
@@ -72,7 +67,7 @@ export default function WalletCountChart() {
           text: "Number of Wallets",
         },
         ticks: {
-          callback: function (value: number) {
+          callback: function(value: any) {
             return value.toLocaleString();
           },
         },
@@ -88,11 +83,15 @@ export default function WalletCountChart() {
 
   return (
     <div className="w-full h-full">
-      {data.length > 0 ? (
+      {isLoading ? (
+        <div className="flex items-center justify-center h-full">
+          <p>Loading data...</p>
+        </div>
+      ) : historicalWalletCount.length > 0 ? (
         <Line data={chartData} options={options} />
       ) : (
         <div className="flex items-center justify-center h-full">
-          <p>Loading data...</p>
+          <p>No data available</p>
         </div>
       )}
     </div>

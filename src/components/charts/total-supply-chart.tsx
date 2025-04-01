@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -13,7 +12,7 @@ import {
   Legend,
   Filler,
 } from "chart.js";
-import { simulateHistoricalUSDCSupply } from "@/lib/api";
+import { useUSDC } from "@/lib/context/usdc-context";
 
 // Register ChartJS components
 ChartJS.register(
@@ -28,20 +27,14 @@ ChartJS.register(
 );
 
 export default function TotalSupplyChart() {
-  const [data, setData] = useState<{ date: string; supply: number }[]>([]);
-
-  useEffect(() => {
-    // In a real app, this would fetch from an API
-    const supplyData = simulateHistoricalUSDCSupply();
-    setData(supplyData);
-  }, []);
+  const { historicalSupply, isLoading } = useUSDC();
 
   const chartData = {
-    labels: data.map((d) => d.date),
+    labels: historicalSupply.map((d) => d.date),
     datasets: [
       {
         label: "Total USDC Supply",
-        data: data.map((d) => d.supply / 1_000_000_000), // Convert to billions
+        data: historicalSupply.map((d) => d.supply / 1_000_000_000), // Convert to billions
         borderColor: "rgb(46, 125, 50)",
         backgroundColor: "rgba(46, 125, 50, 0.1)",
         borderWidth: 2,
@@ -51,7 +44,7 @@ export default function TotalSupplyChart() {
     ],
   };
 
-  const options: any = {
+  const options = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -60,8 +53,8 @@ export default function TotalSupplyChart() {
       },
       tooltip: {
         callbacks: {
-          label: function (tooltipItem: any) {
-            return `$${tooltipItem.raw.toFixed(2)}B`;
+          label: function(context: any) {
+            return `$${context.raw.toFixed(2)}B`;
           },
         },
       },
@@ -74,7 +67,7 @@ export default function TotalSupplyChart() {
           text: "Billions of USDC",
         },
         ticks: {
-          callback: function (value: number) {
+          callback: function(value: any) {
             return `$${value}B`;
           },
         },
@@ -82,7 +75,7 @@ export default function TotalSupplyChart() {
       x: {
         title: {
           display: true,
-          text: "Month",
+          text: "Date",
         },
       },
     },
@@ -90,11 +83,15 @@ export default function TotalSupplyChart() {
 
   return (
     <div className="w-full h-full">
-      {data.length > 0 ? (
+      {isLoading ? (
+        <div className="flex items-center justify-center h-full">
+          <p>Loading data...</p>
+        </div>
+      ) : historicalSupply.length > 0 ? (
         <Line data={chartData} options={options} />
       ) : (
         <div className="flex items-center justify-center h-full">
-          <p>Loading data...</p>
+          <p>No data available</p>
         </div>
       )}
     </div>

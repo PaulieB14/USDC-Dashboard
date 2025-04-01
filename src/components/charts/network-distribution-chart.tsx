@@ -1,46 +1,48 @@
 "use client";
 
-import React from "react";
 import { Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   ArcElement,
   Tooltip,
   Legend,
+  Colors,
 } from "chart.js";
+import { useUSDC } from "@/lib/context/usdc-context";
 
 // Register ChartJS components
-ChartJS.register(
-  ArcElement,
-  Tooltip,
-  Legend
-);
+ChartJS.register(ArcElement, Tooltip, Legend, Colors);
 
-// Network data (simulated)
-const networkData = [
-  { network: "Ethereum", value: 18500000000, color: "rgba(98, 126, 234, 0.8)", borderColor: "#627EEA" },
-  { network: "Polygon", value: 5200000000, color: "rgba(130, 71, 229, 0.8)", borderColor: "#8247E5" },
-  { network: "Arbitrum", value: 3100000000, color: "rgba(40, 160, 240, 0.8)", borderColor: "#28A0F0" },
-  { network: "Optimism", value: 2400000000, color: "rgba(255, 4, 32, 0.8)", borderColor: "#FF0420" },
-  { network: "Base", value: 1000000000, color: "rgba(0, 82, 255, 0.8)", borderColor: "#0052FF" },
-];
+// Network colors
+const NETWORK_COLORS = {
+  ethereum: "rgba(52, 152, 219, 0.8)",
+  polygon: "rgba(155, 89, 182, 0.8)",
+  arbitrum: "rgba(0, 188, 212, 0.8)",
+  optimism: "rgba(231, 76, 60, 0.8)",
+  base: "rgba(41, 128, 185, 0.8)",
+};
 
 export default function NetworkDistributionChart() {
+  const { networkMetrics, isLoading } = useUSDC();
+
+  // Process data for the chart
   const chartData = {
-    labels: networkData.map(item => item.network),
+    labels: networkMetrics.map((metric) => {
+      // Capitalize first letter of network name
+      const networkName = metric.network.charAt(0).toUpperCase() + metric.network.slice(1);
+      return networkName;
+    }),
     datasets: [
       {
-        data: networkData.map(item => item.value / 1_000_000_000), // Convert to billions
-        backgroundColor: networkData.map(item => item.color),
-        borderColor: networkData.map(item => item.borderColor),
-        borderWidth: 2,
-        hoverBorderWidth: 3,
-        hoverOffset: 10,
+        data: networkMetrics.map((metric) => metric.totalSupply / 1_000_000_000), // Convert to billions
+        backgroundColor: networkMetrics.map((metric) => NETWORK_COLORS[metric.network as keyof typeof NETWORK_COLORS]),
+        borderColor: networkMetrics.map((metric) => NETWORK_COLORS[metric.network as keyof typeof NETWORK_COLORS].replace("0.8", "1")),
+        borderWidth: 1,
       },
     ],
   };
 
-  const options: any = {
+  const options = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -48,18 +50,19 @@ export default function NetworkDistributionChart() {
         position: "right" as const,
         labels: {
           padding: 20,
+          boxWidth: 12,
           font: {
-            size: 12
-          }
-        }
+            size: 12,
+          },
+        },
       },
       tooltip: {
         callbacks: {
-          label: function(tooltipItem: any) {
-            const value = tooltipItem.raw;
-            const total = tooltipItem.dataset.data.reduce((a: number, b: number) => a + b, 0);
+          label: function(context: any) {
+            const value = context.raw;
+            const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
             const percentage = Math.round((value / total) * 100);
-            return `${tooltipItem.label}: $${value.toFixed(1)}B (${percentage}%)`;
+            return `$${value.toFixed(2)}B (${percentage}%)`;
           },
         },
       },
@@ -67,10 +70,18 @@ export default function NetworkDistributionChart() {
   };
 
   return (
-    <div className="w-full h-full flex items-center justify-center">
-      <div style={{ height: "90%", width: "90%" }}>
+    <div className="w-full h-full">
+      {isLoading ? (
+        <div className="flex items-center justify-center h-full">
+          <p>Loading data...</p>
+        </div>
+      ) : networkMetrics.length > 0 ? (
         <Pie data={chartData} options={options} />
-      </div>
+      ) : (
+        <div className="flex items-center justify-center h-full">
+          <p>No data available</p>
+        </div>
+      )}
     </div>
   );
 }

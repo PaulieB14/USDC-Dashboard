@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -11,7 +10,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { simulateMintBurnData } from "@/lib/api";
+import { useUSDC } from "@/lib/context/usdc-context";
 
 // Register ChartJS components
 ChartJS.register(
@@ -24,27 +23,21 @@ ChartJS.register(
 );
 
 export default function MintBurnChart() {
-  const [data, setData] = useState<{ date: string; minted: number; burned: number }[]>([]);
-
-  useEffect(() => {
-    // In a real app, this would fetch from an API
-    const mintBurnData = simulateMintBurnData();
-    setData(mintBurnData);
-  }, []);
+  const { mintBurnData, isLoading } = useUSDC();
 
   const chartData = {
-    labels: data.map((d) => d.date),
+    labels: mintBurnData.map((d) => d.date),
     datasets: [
       {
         label: "Minted",
-        data: data.map((d) => d.minted / 1_000_000), // Convert to millions
+        data: mintBurnData.map((d) => d.minted / 1_000_000), // Convert to millions
         backgroundColor: "rgba(46, 125, 50, 0.8)",
         borderColor: "rgb(46, 125, 50)",
         borderWidth: 1,
       },
       {
         label: "Burned",
-        data: data.map((d) => d.burned / 1_000_000), // Convert to millions
+        data: mintBurnData.map((d) => d.burned / 1_000_000), // Convert to millions
         backgroundColor: "rgba(211, 47, 47, 0.8)",
         borderColor: "rgb(211, 47, 47)",
         borderWidth: 1,
@@ -52,7 +45,7 @@ export default function MintBurnChart() {
     ],
   };
 
-  const options: any = {
+  const options = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -61,8 +54,8 @@ export default function MintBurnChart() {
       },
       tooltip: {
         callbacks: {
-          label: function (tooltipItem: any) {
-            return `${tooltipItem.dataset.label}: $${tooltipItem.raw.toFixed(1)}M`;
+          label: function(context: any) {
+            return `${context.dataset.label}: $${context.raw.toFixed(1)}M`;
           },
         },
       },
@@ -75,7 +68,7 @@ export default function MintBurnChart() {
           text: "Millions of USDC",
         },
         ticks: {
-          callback: function (value: number) {
+          callback: function(value: any) {
             return `$${value}M`;
           },
         },
@@ -91,11 +84,15 @@ export default function MintBurnChart() {
 
   return (
     <div className="w-full h-full">
-      {data.length > 0 ? (
+      {isLoading ? (
+        <div className="flex items-center justify-center h-full">
+          <p>Loading data...</p>
+        </div>
+      ) : mintBurnData.length > 0 ? (
         <Bar data={chartData} options={options} />
       ) : (
         <div className="flex items-center justify-center h-full">
-          <p>Loading data...</p>
+          <p>No data available</p>
         </div>
       )}
     </div>
