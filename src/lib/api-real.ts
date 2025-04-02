@@ -377,17 +377,30 @@ export async function fetchLargeTransfers(limit: number = 10): Promise<TokenTran
         if (data.data && Array.isArray(data.data) && data.data.length > 0) {
           console.log(`Found ${data.data.length} USDC transfers on ${network}`);
           
-          return data.data.map((transfer: any) => ({
-            from: transfer.from,
-            to: transfer.to,
-            amount: transfer.amount,
-            timestamp: transfer.datetime || transfer.timestamp,
-            transaction_hash: transfer.transaction_id || transfer.transaction_hash,
-            network: network,
-            symbol: transfer.symbol || "USDC",
-            decimals: transfer.decimals || 6,
-            value_usd: transfer.value_usd || 0
-          }));
+          return data.data.map((transfer: any) => {
+            // Get the decimals (default to 6 for USDC if not specified)
+            const decimals = transfer.decimals || 6;
+            
+            // Convert raw amount to actual token amount
+            const actualAmount = transfer.amount ? 
+              parseFloat(transfer.amount) / Math.pow(10, decimals) : 
+              0;
+            
+            // Use value_usd if available, otherwise calculate from amount
+            const valueUsd = transfer.value_usd || actualAmount;
+            
+            return {
+              from: transfer.from,
+              to: transfer.to,
+              amount: actualAmount.toString(),
+              timestamp: transfer.datetime || transfer.timestamp,
+              transaction_hash: transfer.transaction_id || transfer.transaction_hash,
+              network: network,
+              symbol: transfer.symbol || "USDC",
+              decimals: decimals,
+              value_usd: valueUsd
+            };
+          });
         }
       } catch (error) {
         console.error(`Error fetching transfers for ${network}:`, error);
